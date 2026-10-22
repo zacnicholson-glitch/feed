@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install XML checker
+        run: sudo apt-get update && sudo apt-get install -y libxml2-utils
       - name: Download and replace
         run: |
           curl -fsSL --compressed "https://dtex12k2e83c8.cloudfront.net/impact/Prod/feed_BDE_BEU_nl.xml" -o raw.xml
