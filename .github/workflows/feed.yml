@@ -1,0 +1,26 @@
+name: Refresh BE feed
+on:
+  schedule:
+    - cron: "30 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download and replace
+        run: |
+          curl -fsSL --compressed "https://dtex12k2e83c8.cloudfront.net/impact/Prod/feed_BDE_BEU_nl.xml" -o raw.xml
+          xmllint --noout raw.xml
+          sed 's|/nl-nl/|/nl-be/|g' raw.xml > feed_BDE_BEU_be.xml
+          xmllint --noout feed_BDE_BEU_be.xml
+      - name: Save
+        run: |
+          git config user.name "feed-bot"
+          git config user.email "feed-bot@users.noreply.github.com"
+          git add feed_BDE_BEU_be.xml
+          git diff --staged --quiet || (git commit -m "Feed refresh" && git push)
